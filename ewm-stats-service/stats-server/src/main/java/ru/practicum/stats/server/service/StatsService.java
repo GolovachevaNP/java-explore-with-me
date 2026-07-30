@@ -24,11 +24,7 @@ public class StatsService {
 
     @Transactional
     public void saveHit(EndpointHitDto dto) {
-        EndpointHit hit = new EndpointHit();
-
-        hit.setApp(dto.getApp());
-        hit.setUri(dto.getUri());
-        hit.setIp(dto.getIp());
+        EndpointHit hit = statsMapper.toEndpointHit(dto);
         hit.setTimestamp(LocalDateTime.parse(dto.getTimestamp(), FORMATTER));
 
         repository.save(hit);

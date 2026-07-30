@@ -41,20 +41,22 @@ public class StatsClient {
     }
 
     public List<ViewStatsDto> getStats(String start, String end, List<String> uris, boolean unique) {
-        String url = serverUrl + "/stats"
-                + "?start=" + encode(start)
-                + "&end=" + encode(end);
+        StringBuilder url = new StringBuilder(serverUrl)
+                .append("/stats?start=")
+                .append(encode(start))
+                .append("&end=")
+                .append(encode(end));
 
         if (uris != null) {
             for (String uri : uris) {
-                url += "&uris=" + encode(uri);
+                url.append("&uris=").append(encode(uri));
             }
         }
 
-        url += "&unique=" + unique;
+        url.append("&unique=").append(unique);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(url.toString()))
                 .GET()
                 .build();
 

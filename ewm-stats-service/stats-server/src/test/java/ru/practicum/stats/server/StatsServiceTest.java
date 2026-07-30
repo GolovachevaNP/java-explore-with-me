@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,10 +39,14 @@ class StatsServiceTest {
         dto.setUri("/events/1");
         dto.setIp("192.168.1.1");
         dto.setTimestamp("2026-11-15 10:00:00");
+        EndpointHit mappedHit = new EndpointHit();
+        when(statsMapper.toEndpointHit(dto)).thenReturn(mappedHit);
 
         statsService.saveHit(dto);
 
-        verify(repository).save(any(EndpointHit.class));
+        verify(repository).save(mappedHit);
+        assertEquals(LocalDateTime.of(2026, 11, 15, 10, 0), mappedHit.getTimestamp());
+        verify(statsMapper).toEndpointHit(dto);
     }
 
     // Проверка получения статистики без фильтра URI

@@ -1,6 +1,8 @@
 package ru.practicum.stats.server;
 
+import org.mapstruct.factory.Mappers;
 import org.junit.jupiter.api.Test;
+import ru.practicum.stats.dto.EndpointHitDto;
 import ru.practicum.stats.dto.ViewStatsDto;
 import ru.practicum.stats.server.mapper.StatsMapper;
 import ru.practicum.stats.server.model.EndpointHit;
@@ -9,9 +11,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class StatsMapperTest {
-    private final StatsMapper mapper = new StatsMapper();
+    private final StatsMapper mapper = Mappers.getMapper(StatsMapper.class);
 
     // Проверка группировки обращений по приложению и URI
     @Test
@@ -87,6 +90,23 @@ class StatsMapperTest {
     @Test
     void shouldReturnEmptyListForEmptyInput() {
         assertEquals(List.of(), mapper.toViewStatsDtoList(List.of(), false));
+    }
+
+    // Проверка преобразования DTO обращения в сущность для сохранения в базе данных
+    @Test
+    void shouldMapEndpointHitDtoToEndpointHit() {
+        EndpointHitDto dto = new EndpointHitDto();
+        dto.setApp("ewm-main-service");
+        dto.setUri("/events/1");
+        dto.setIp("192.168.1.1");
+        dto.setTimestamp("2026-11-15 10:00:00");
+
+        EndpointHit result = mapper.toEndpointHit(dto);
+
+        assertEquals("ewm-main-service", result.getApp());
+        assertEquals("/events/1", result.getUri());
+        assertEquals("192.168.1.1", result.getIp());
+        assertNull(result.getTimestamp());
     }
 
     private EndpointHit hit(String app, String uri, String ip) {

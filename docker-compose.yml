@@ -1,5 +1,6 @@
 services:
   stats-server:
+    restart: on-failure
     build:
       context: ./ewm-stats-service/stats-server
     depends_on:
@@ -12,6 +13,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: stats
 
   stats-db:
+    restart: on-failure
     image: postgres:16.1
     environment:
       POSTGRES_DB: stats
@@ -21,6 +23,7 @@ services:
       - "5432:5432"
 
   ewm-service:
+    restart: on-failure
     build:
       context: ./ewm-main-service
     depends_on:
@@ -31,6 +34,7 @@ services:
       STATS_SERVER_URL: http://stats-server:9090
 
   ewm-db:
+    restart: on-failure
     image: postgres:16.1
     environment:
       POSTGRES_DB: ewm

@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StatsClientTest {
     private HttpServer server;
@@ -49,8 +50,8 @@ class StatsClientTest {
 
         client.hit(dto);
 
-        assertEquals(true, requestBody.get().contains("\"app\":\"ewm-main-service\""));
-        assertEquals(true, requestBody.get().contains("\"uri\":\"/events/1\""));
+        assertTrue(requestBody.get().contains("\"app\":\"ewm-main-service\""));
+        assertTrue(requestBody.get().contains("\"uri\":\"/events/1\""));
     }
 
     // Проверка запроса статистики с несколькими URI
@@ -67,9 +68,9 @@ class StatsClientTest {
                 List.of("/events/1", "/events/2"), true);
 
         assertEquals(2, result.size());
-        assertEquals("ewm-main-service", result.get(0).getApp());
-        assertEquals("/events/1", result.get(0).getUri());
-        assertEquals(2L, result.get(0).getHits());
+        assertEquals("ewm-main-service", result.getFirst().getApp());
+        assertEquals("/events/1", result.getFirst().getUri());
+        assertEquals(2L, result.getFirst().getHits());
     }
 
     // Проверка запроса статистики без фильтра по URI
