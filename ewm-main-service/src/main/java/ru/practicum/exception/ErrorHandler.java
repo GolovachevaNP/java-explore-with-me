@@ -83,6 +83,7 @@ public class ErrorHandler {
                 "Произошла непредвиденная ошибка"
         );
     }
+
     @ExceptionHandler(DateTimeParseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleDateError(DateTimeParseException exception) {
