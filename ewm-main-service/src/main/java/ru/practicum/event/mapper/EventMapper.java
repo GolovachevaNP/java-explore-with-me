@@ -35,8 +35,6 @@ public interface EventMapper {
     @Mapping(target = "views", ignore = true)
     EventShortDto toEventShortDto(Event event);
 
-    List<EventShortDto> toEventShortDtoList(List<Event> events);
-
     Location toLocation(Event event);
 
     default String map(LocalDateTime dateTime) {

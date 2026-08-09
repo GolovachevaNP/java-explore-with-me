@@ -12,6 +12,4 @@ public interface CompilationMapper {
 
     @Mapping(target = "events", ignore = true)
     CompilationDto toCompilationDto(Compilation compilation);
-
-    List<CompilationDto> toCompilationDtoList(List<Compilation> compilations);
 }

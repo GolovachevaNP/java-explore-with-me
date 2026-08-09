@@ -190,10 +190,15 @@ public class EventService {
         }
 
         if (dto.getStateAction() != null) {
-            if (dto.getStateAction() == StateAction.SEND_TO_REVIEW) {
-                event.setState(EventState.PENDING);
-            } else {
-                event.setState(EventState.CANCELED);
+            switch (dto.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    event.setState(EventState.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    event.setState(EventState.CANCELED);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Неизвестное действие со статусом события");
             }
         }
 
@@ -345,12 +350,23 @@ public class EventService {
             throw new IllegalArgumentException("Дата начала не может быть позже даты окончания");
         }
 
+        EventSort eventSort = sort;
+
+        if (eventSort == null) {
+            eventSort = EventSort.EVENT_DATE;
+        }
+
         Pageable pageable;
 
-        if (sort == EventSort.VIEWS) {
-            pageable = Pageable.unpaged();
-        } else {
-            pageable = PageRequest.of(0, from + size, Sort.by("eventDate"));
+        switch (eventSort) {
+            case VIEWS:
+                pageable = Pageable.unpaged();
+                break;
+            case EVENT_DATE:
+                pageable = PageRequest.of(0, from + size, Sort.by("eventDate"));
+                break;
+            default:
+                throw new IllegalArgumentException("Неизвестный вариант сортировки");
         }
 
         List<Event> events = eventRepository.findPublicEvents(
@@ -368,7 +384,7 @@ public class EventService {
                 pageable
         ).getContent();
 
-        if (sort != EventSort.VIEWS) {
+        if (eventSort == EventSort.EVENT_DATE) {
             events = getEventPage(events, from, size);
         }
 
@@ -386,7 +402,7 @@ public class EventService {
             result.add(dto);
         }
 
-        if (sort == EventSort.VIEWS) {
+        if (eventSort == EventSort.VIEWS) {
             result.sort(Comparator.comparing(EventShortDto::getViews).reversed());
 
             return getEventShortDtoPage(result, from, size);
@@ -499,11 +515,6 @@ public class EventService {
         log.debug("Администратор получил список событий: количество={}", result.size());
 
         return result;
-    }
-
-    @Transactional(readOnly = true)
-    public EventShortDto getEventShortDto(Event event) {
-        return getEventShortDtos(List.of(event)).getFirst();
     }
 
     @Transactional(readOnly = true)
