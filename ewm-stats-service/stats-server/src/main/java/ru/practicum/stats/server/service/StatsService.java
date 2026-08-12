@@ -1,6 +1,7 @@
 package ru.practicum.stats.server.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.dto.EndpointHitDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StatsService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -28,6 +30,7 @@ public class StatsService {
         hit.setTimestamp(LocalDateTime.parse(dto.getTimestamp(), FORMATTER));
 
         repository.save(hit);
+        log.debug("Обращение сохранено: app={}, uri={}", hit.getApp(), hit.getUri());
     }
 
     @Transactional(readOnly = true)
@@ -41,6 +44,9 @@ public class StatsService {
                 ? repository.findAllByTimestampBetween(start, end)
                 : repository.findAllByTimestampBetweenAndUriIn(start, end, uris);
 
-        return statsMapper.toViewStatsDtoList(hits, unique);
+        List<ViewStatsDto> stats = statsMapper.toViewStatsDtoList(hits, unique);
+        log.debug("Статистика сформирована: количество записей={}", stats.size());
+
+        return stats;
     }
 }
