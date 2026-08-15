@@ -4,7 +4,7 @@ Template repository for ExploreWithMe project.
 
 ## Pull Request
 
-[Реализация дополнительной функциональности «Комментарии»](  )
+[Реализация дополнительной функциональности «Комментарии»]( https://github.com/GolovachevaNP/java-explore-with-me/pull/5 )
 
 
 ## ER-диаграмма
